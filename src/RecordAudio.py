@@ -69,18 +69,17 @@ class RecordAudio:
         dtype = 'int{0}'.format(bits_per_sample)
         audio = np.frombuffer(wf.readframes(int(duration*self.RATE*bytes_per_sample/self.CHANNELS)), dtype=dtype)
 
-        return audio, duration, nframes, bytes_per_sample, dtype
+        return audio, duration, nframes
 
     def dB(self, a, base=1.0):
         return 10.0*np.log10(a/base)
 
     def display_record(self):
-        audio, duration, frames, bps, dt = self.read_audio(self.OUTPUT_FILENAME)
+        audio, duration, frames = self.read_audio(self.OUTPUT_FILENAME)
         fs = self.RATE
         audio_fft = np.fft.fft(audio)
         freqs = np.fft.fftfreq(audio.shape[0], 1.0/fs) / 1000.0
         max_freq_kHz = freqs.max()
-        times = np.arange(audio.shape[0]) / float(fs)
         fftshift = np.fft.fftshift
 
         fig = pyplot.figure(figsize=(8.5, 11))
