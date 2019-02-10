@@ -12,7 +12,7 @@ class RecordAudio:
         self.CHANNELS = channels
         self.RATE = rate
         self.frames = []
-        self.OUTPUT_FILENAME = "../output.wav"
+        self.OUTPUT_FILENAME = "output.wav"
 
     def start_record(self):
         self.frames = []
@@ -33,6 +33,13 @@ class RecordAudio:
         
         stream.close()
         p.terminate()
+
+        # Debugging.
+        bits_per_sample = p.get_sample_size(self.FORMAT) * 8
+        print(bits_per_sample)
+        dtype = 'int{0}'.format(bits_per_sample)
+        audio = np.frombuffer(b''.join(self.frames), dtype)
+        print(audio.max())
 
         wf = wave.open(self.OUTPUT_FILENAME, 'wb')
         wf.setnchannels(self.CHANNELS)
@@ -98,10 +105,15 @@ class RecordAudio:
         ax_spec_gram.set_ylabel('Frequency (Hz)')
         ax_spec_gram.set_xlabel('Time (s)')
 
-        ax_fft.plot(np.fft.fftshift(freqs), np.fft.fftshift(self.dB(audio_fft)))
-        ax_fft.set_xlim(0, max_freq_kHz)
-        ax_fft.set_xlabel('Frequency (kHz)')
-        ax_fft.set_ylabel('dB')
+        # ax_fft.plot(np.fft.fftshift(freqs), np.fft.fftshift(self.dB(audio_fft)))
+        # ax_fft.set_xlim(0, max_freq_kHz)
+        # ax_fft.set_xlabel('Frequency (kHz)')
+        # ax_fft.set_ylabel('dB')
+
+        ax_fft.plot(np.arange(frames)/self.RATE, audio)
+        ax_fft.set_xlim(0, duration)
+        ax_fft.set_xlabel('Time (s)')
+        ax_fft.set_ylabel('Amplitude')
 
         pyplot.tight_layout()
         pyplot.show()
