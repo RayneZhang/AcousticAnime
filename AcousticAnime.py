@@ -1,17 +1,16 @@
 import click
 from src.RecordAudio import RecordAudio
+from src.SignalDetector import SignalDetector
 
 if __name__ == '__main__':
-    record = RecordAudio()
+    stream = SignalDetector()
     # Start looping, which will be indefinite until 'q' is pressed.
     running = True
     while running:
 
         print('''
             Press a key to perform that operation...
-            r: record audio and save to file (ctrl+c to stop recording and save)
-            p: replay audio file
-            d: display the spectrogram of the audio file
+            s: start streaming audio and detect tap/scratch (ctrl+c to stop recording and save)
             q or Q: quit program
         ''')
 
@@ -21,11 +20,5 @@ if __name__ == '__main__':
         if key == 'q' or key == 'Q':
             running = False
         
-        if key == 'r':
-            record.start_record()
-            
-        if key == 'p':
-            record.play_record()
-
-        if key == 'd':
-            record.display_record()
+        if key == 's':
+            stream.start_streaming()

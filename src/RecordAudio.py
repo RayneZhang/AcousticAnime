@@ -2,6 +2,7 @@ import pyaudio
 import wave
 import click
 import os
+import time
 import numpy as np
 import matplotlib.pyplot as pyplot
 
@@ -26,20 +27,13 @@ class RecordAudio:
         try:
             print("* recording started, press ctrl+c to stop")
             while True:
-                data = stream.read(self.CHUNK)
+                data = stream.read(self.CHUNK) #0.135s
                 self.frames.append(data)
         except KeyboardInterrupt:
             print("* recording stopped, save to {}".format(self.OUTPUT_FILENAME))
         
         stream.close()
         p.terminate()
-
-        # Debugging.
-        bits_per_sample = p.get_sample_size(self.FORMAT) * 8
-        print(bits_per_sample)
-        dtype = 'int{0}'.format(bits_per_sample)
-        audio = np.frombuffer(b''.join(self.frames), dtype)
-        print(audio.max())
 
         wf = wave.open(self.OUTPUT_FILENAME, 'wb')
         wf.setnchannels(self.CHANNELS)
