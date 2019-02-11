@@ -56,7 +56,7 @@ if __name__ == '__main__':
 
         print('''
             Press a key to perform that operation...
-            s: start streaming audio and detect tap/scratch (ctrl+c to stop recording and save)
+            s: start streaming audio and detect tap/scratch (ctrl+c to stop streaming)
             q or Q: quit program
         ''')
 

@@ -88,10 +88,10 @@ class RecordAudio:
         ax_fft = fig.add_subplot(313)
         pyplot.gcf().subplots_adjust(bottom=0.2)
 
-        ax_time.plot(np.arange(frames)/self.RATE, audio/audio.max())
-        ax_time.set_xlabel('Time (s)')
-        ax_time.set_ylabel('Relative amplitude')
-        ax_time.set_xlim(0, duration)
+        # ax_time.plot(np.arange(frames)/self.RATE, audio/audio.max())
+        # ax_time.set_xlabel('Time (s)')
+        # ax_time.set_ylabel('Relative amplitude')
+        # ax_time.set_xlim(0, duration)
 
         ax_spec_gram.specgram(audio, Fs=fs, cmap='jet')
         ax_spec_gram.set_xlim(0, duration)
@@ -99,15 +99,15 @@ class RecordAudio:
         ax_spec_gram.set_ylabel('Frequency (Hz)')
         ax_spec_gram.set_xlabel('Time (s)')
 
-        # ax_fft.plot(np.fft.fftshift(freqs), np.fft.fftshift(self.dB(audio_fft)))
-        # ax_fft.set_xlim(0, max_freq_kHz)
-        # ax_fft.set_xlabel('Frequency (kHz)')
-        # ax_fft.set_ylabel('dB')
+        ax_fft.plot(np.fft.fftshift(freqs), np.fft.fftshift(self.dB(audio_fft)))
+        ax_fft.set_xlim(0, max_freq_kHz)
+        ax_fft.set_xlabel('Frequency (kHz)')
+        ax_fft.set_ylabel('dB')
 
-        ax_fft.plot(np.arange(frames)/self.RATE, audio)
-        ax_fft.set_xlim(0, duration)
-        ax_fft.set_xlabel('Time (s)')
-        ax_fft.set_ylabel('Amplitude')
+        ax_time.plot(np.arange(frames)/self.RATE, audio)
+        ax_time.set_xlim(0, duration)
+        ax_time.set_xlabel('Time (s)')
+        ax_time.set_ylabel('Amplitude')
 
         pyplot.tight_layout()
         pyplot.show()
