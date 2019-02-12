@@ -9,6 +9,7 @@ import matplotlib.pyplot as pyplot
 from scipy.signal.windows import blackmanharris
 from scipy.fftpack import rfft
 
+import pygame as pg
 
 class SignalDetector:
     def __init__(self, chunk=3024, frmat=pyaudio.paInt16, channels=1, rate=22050):
@@ -36,6 +37,7 @@ class SignalDetector:
                 self.frames.append(data)
                 self.detect_tap(p)
                 self.freq_from_fft(p)
+                # time.sleep(0.1)
         except KeyboardInterrupt:
             print("* streaming stopped")
         
@@ -49,7 +51,12 @@ class SignalDetector:
         dtype = 'int{0}'.format(bits_per_sample)
         audio = np.frombuffer(b''.join(self.frames), dtype)
         if audio.max() > threshold:
+            a_down_event = pg.event.Event(pg.KEYDOWN, key=pg.K_a)
+            pg.event.post(a_down_event)
             print('Tap detected!')
+            time.sleep(0.2)
+            a_up_event = pg.event.Event(pg.KEYUP, key=pg.K_a)
+            pg.event.post(a_up_event)
         # end_time = time.time()
         # print(end_time - start_time) # 0.00015s
 
@@ -72,7 +79,7 @@ class SignalDetector:
         true_i = self.parabolic(np.log(abs(f)), i)[0]
 
         # Convert to equivalent frequency
-        print(fs * true_i / len(windowed))
+        # print(fs * true_i / len(windowed))
         # return fs * true_i / len(windowed)
 
     def parabolic(self,f, x):
