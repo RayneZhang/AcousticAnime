@@ -66,6 +66,10 @@ class Control(object):
                     keys = list(self.keys)
                     keys[pg.K_RIGHT] = 1
                     self.keys = tuple(keys)
+                if event.key == pg.K_LEFT:
+                    keys = list(self.keys)
+                    keys[pg.K_LEFT] = 1
+                    self.keys = tuple(keys)
                     # print(self.keys) # For debugging
             elif event.type == pg.KEYUP:
                 # self.keys = pg.key.get_pressed()
@@ -77,6 +81,10 @@ class Control(object):
                 elif event.key == pg.K_RIGHT:
                     keys = list(self.keys)
                     keys[pg.K_RIGHT] = 0
+                    self.keys = tuple(keys)
+                elif event.key == pg.K_LEFT:
+                    keys = list(self.keys)
+                    keys[pg.K_LEFT] = 0
                     self.keys = tuple(keys)
                     # print(self.keys) # For debugging
                 else:

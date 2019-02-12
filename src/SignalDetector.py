@@ -23,7 +23,9 @@ class SignalDetector:
         self.OUTPUT_FILENAME = "output.wav"
         self.tap_started_time = 0
         self.scratch_started_time = 0
+        self.back_started_time = 0
         self.scratching = False
+        self.backing = False
 
     def start_streaming(self):
         self.frames = []
@@ -50,8 +52,11 @@ class SignalDetector:
                 if self.scratch_started_time != 0 and time.time() - self.scratch_started_time > 0.2:
                     arrow_up_event = pg.event.Event(pg.KEYUP, key=pg.K_RIGHT)
                     pg.event.post(arrow_up_event)
-                    self.scratching = False;
-                    # time.sleep(0.1)
+                    self.scratching = False
+                if self.back_started_time != 0 and time.time() - self.back_started_time > 0.2:
+                    arrow_up_event = pg.event.Event(pg.KEYUP, key=pg.K_LEFT)
+                    pg.event.post(arrow_up_event)
+                    self.backing = False
         except KeyboardInterrupt:
             print("* streaming stopped")
         
@@ -73,6 +78,7 @@ class SignalDetector:
         # end_time = time.time()
         # print(end_time - start_time) # 0.00015s
 
+    # Reference: https://github.com/aubio/aubio/issues/6
     def detect_pitch(self, p, data):
         # Aubio's pitch detection.
         pDetection = aubio.pitch("default", 4096,
@@ -84,7 +90,9 @@ class SignalDetector:
         samples = np.fromstring(data,
                     dtype=aubio.float_type)
         pitch = pDetection(samples)[0]
-        if pitch > 800 and pitch < 1000:
+        confidence = pDetection.get_confidence()
+        print("{} / {}".format(pitch,confidence))
+        if pitch > 700 and pitch < 1000:
             if self.scratching == False:
                 arrow_down_event = pg.event.Event(pg.KEYDOWN, key=pg.K_RIGHT)
                 pg.event.post(arrow_down_event)
@@ -92,6 +100,14 @@ class SignalDetector:
             self.scratch_started_time = time.time()
             # print(self.scratch_started_time) # Debugging
             print('Scratch detected!')
+        if pitch > 4000 and confidence > 0.6 :
+            if self.backing == False:
+                arrow_down_event = pg.event.Event(pg.KEYDOWN, key=pg.K_LEFT)
+                pg.event.post(arrow_down_event)
+                self.backing = True
+            self.back_started_time = time.time()
+            # print(self.scratch_started_time) # Debugging
+            print('Back detected!')
 
 
     # freq_from_fft is adapted from https://gist.github.com/endolith/255291
