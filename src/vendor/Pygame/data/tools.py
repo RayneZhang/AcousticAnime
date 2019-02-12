@@ -48,14 +48,12 @@ class Control(object):
         self.state.startup(self.current_time, persist)
         self.state.previous = previous
 
-
+    # Modified by Lei @2/12/2019
     def event_loop(self):
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 self.done = True
             elif event.type == pg.KEYDOWN:
-                # Modified by Lei @2/12/2019
-                print("KEYDOWN!")
                 self.keys = pg.key.get_pressed()
                 # print(self.keys) # For debugging
                 self.toggle_show_fps(event.key)
@@ -70,7 +68,19 @@ class Control(object):
                     self.keys = tuple(keys)
                     # print(self.keys) # For debugging
             elif event.type == pg.KEYUP:
-                self.keys = pg.key.get_pressed()
+                # self.keys = pg.key.get_pressed()
+                if event.key == pg.K_a:
+                    keys = list(self.keys)
+                    keys[pg.K_a] = 0
+                    self.keys = tuple(keys)
+                    # print(self.keys) # For debugging
+                elif event.key == pg.K_RIGHT:
+                    keys = list(self.keys)
+                    keys[pg.K_RIGHT] = 0
+                    self.keys = tuple(keys)
+                    # print(self.keys) # For debugging
+                else:
+                    self.keys = pg.key.get_pressed()
             self.state.get_event(event)
 
 
