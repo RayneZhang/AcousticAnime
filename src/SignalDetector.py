@@ -6,6 +6,10 @@ import time
 import numpy as np
 import matplotlib.pyplot as pyplot
 
+from scipy.signal.windows import blackmanharris
+from scipy.fftpack import rfft
+
+
 class SignalDetector:
     def __init__(self, chunk=3024, frmat=pyaudio.paInt16, channels=1, rate=22050):
         self.CHUNK = chunk
@@ -31,6 +35,7 @@ class SignalDetector:
                 data = stream.read(self.CHUNK) #0.135s
                 self.frames.append(data)
                 self.detect_tap(p)
+                self.freq_from_fft(p)
         except KeyboardInterrupt:
             print("* streaming stopped")
         
@@ -47,6 +52,51 @@ class SignalDetector:
             print('Tap detected!')
         # end_time = time.time()
         # print(end_time - start_time) # 0.00015s
+
+    # freq_from_fft is adapted from https://gist.github.com/endolith/255291
+    def freq_from_fft(self, p):
+        """
+        Estimate frequency from peak of FFT
+        """
+        bits_per_sample = p.get_sample_size(self.FORMAT) * 8
+        dtype = 'int{0}'.format(bits_per_sample)
+        sig = np.frombuffer(b''.join(self.frames), dtype)
+        fs = self.RATE
+
+        # Compute Fourier transform of windowed signal
+        windowed = sig * blackmanharris(len(sig))
+        f = rfft(windowed)
+
+        # Find the peak and interpolate to get a more accurate peak
+        i = np.argmax(abs(f))  # Just use this for less-accurate, naive version
+        true_i = self.parabolic(np.log(abs(f)), i)[0]
+
+        # Convert to equivalent frequency
+        print(fs * true_i / len(windowed))
+        # return fs * true_i / len(windowed)
+
+    def parabolic(self,f, x):
+        """Quadratic interpolation for estimating the true position of an
+        inter-sample maximum when nearby samples are known.
+    
+        f is a vector and x is an index for that vector.
+    
+        Returns (vx, vy), the coordinates of the vertex of a parabola that goes
+        through point x and its two neighbors.
+    
+        Example:
+        Defining a vector f with a local maximum at index 3 (= 6), find local
+        maximum if points 2, 3, and 4 actually defined a parabola.
+    
+        In [3]: f = [2, 3, 1, 6, 4, 2, 3, 1]
+    
+        In [4]: parabolic(f, argmax(f))
+        Out[4]: (3.2142857142857144, 6.1607142857142856)
+    
+        """
+        xv = 1/2. * (f[x-1] - f[x+1]) / (f[x-1] - 2 * f[x] + f[x+1]) + x
+        yv = f[x] - 1/4. * (f[x-1] - f[x+1]) * (xv - x)
+        return (xv, yv)
 
 if __name__ == '__main__':
     stream = SignalDetector()
