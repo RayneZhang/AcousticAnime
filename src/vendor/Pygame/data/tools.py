@@ -59,9 +59,14 @@ class Control(object):
                 self.keys = pg.key.get_pressed()
                 # print(self.keys) # For debugging
                 self.toggle_show_fps(event.key)
-                if event.key == 97:
+                if event.key == pg.K_a:
                     keys = list(self.keys)
-                    keys[97] = 1
+                    keys[pg.K_a] = 1
+                    self.keys = tuple(keys)
+                    # print(self.keys) # For debugging
+                if event.key == pg.K_RIGHT:
+                    keys = list(self.keys)
+                    keys[pg.K_RIGHT] = 1
                     self.keys = tuple(keys)
                     # print(self.keys) # For debugging
             elif event.type == pg.KEYUP:

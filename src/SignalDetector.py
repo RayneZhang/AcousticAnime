@@ -33,7 +33,7 @@ class SignalDetector:
             print("* streaming started, press ctrl+c to stop")
             while True:
                 self.frames = [] # Clear frames at each slice.
-                data = stream.read(self.CHUNK) #0.135s
+                data = stream.read(self.CHUNK, exception_on_overflow = False) #0.135s
                 self.frames.append(data)
                 self.detect_tap(p)
                 self.freq_from_fft(p)
@@ -79,6 +79,13 @@ class SignalDetector:
         true_i = self.parabolic(np.log(abs(f)), i)[0]
 
         # Convert to equivalent frequency
+        if (fs * true_i / len(windowed)) > 3000:
+            arrow_down_event = pg.event.Event(pg.KEYDOWN, key=pg.K_RIGHT)
+            pg.event.post(arrow_down_event)
+            print('Scratch detected!')
+            time.sleep(0.2)
+            arrow_up_event = pg.event.Event(pg.KEYUP, key=pg.K_RIGHT)
+            pg.event.post(arrow_up_event)
         # print(fs * true_i / len(windowed))
         # return fs * true_i / len(windowed)
 

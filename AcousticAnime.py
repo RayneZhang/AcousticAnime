@@ -23,27 +23,3 @@ if __name__ == '__main__':
     # t1.join()
     start_gaming()
     
-
-# if __name__ == '__main__':
-#     main()
-#     pg.quit()
-
-#     stream = SignalDetector()
-#     # Start looping, which will be indefinite until 'q' is pressed.
-#     running = True
-#     while running:
-
-#         print('''
-#             Press a key to perform that operation...
-#             s: start streaming audio and detect tap/scratch (ctrl+c to stop streaming)
-#             q or Q: quit program
-#         ''')
-
-#         key = click.getchar()
-#         print(key)
-
-#         if key == 'q' or key == 'Q':
-#             running = False
-        
-#         if key == 's':
-#             stream.start_streaming()
