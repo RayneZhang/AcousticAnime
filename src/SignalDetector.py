@@ -80,6 +80,8 @@ class SignalDetector:
 
     # Pitch detection reference: https://github.com/aubio/aubio/issues/6
     def detect_pitch(self, p, data):
+        # Debugging.
+        # start_time = time.time()
         # Aubio's pitch detection.
         pDetection = aubio.pitch("default", 4096,
             1024, self.RATE)
@@ -92,7 +94,7 @@ class SignalDetector:
         pitch = pDetection(samples)[0]
         confidence = pDetection.get_confidence()
         print("{} / {}".format(pitch,confidence))
-        if pitch > 1000 and pitch < 1600 and confidence > 0.3:
+        if pitch > 500 and pitch < 1600 and confidence > 0.3:
             if self.scratching == False:
                 arrow_down_event = pg.event.Event(pg.KEYDOWN, key=pg.K_RIGHT)
                 pg.event.post(arrow_down_event)
@@ -108,6 +110,8 @@ class SignalDetector:
             self.back_started_time = time.time()
             # print(self.scratch_started_time) # Debugging
             print('Back detected!')
+        # end_time = time.time()
+        # print(end_time - start_time) # 0.014s
 
     # freq_from_fft is adapted from https://gist.github.com/endolith/255291
     def freq_from_fft(self, p, threshold=5000):
